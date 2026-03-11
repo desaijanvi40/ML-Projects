@@ -1,0 +1,43 @@
+Project Presentation Script
+1. The Opening (Introduction)
+"Good Morning Sir/Ma'am. My name is [Your Name], and today I am presenting my final year project: 'AI-Driven Diabetes Prediction & Risk Analytics System'."
+
+"Sir, diabetes ek aisi bimari hai jo silently body ko damage karti hai. Mera objective ek aisa machine learning tool banana tha jo clinical data ko analyze karke early-stage par hi diabetes ka risk detect kar sake."
+
+Shutterstock
+Explore
+
+2. The Data & Challenges (The "Brain" part)
+"Is project ke liye maine Pima Indians Diabetes Dataset ka use kiya hai. Lekin dataset mein ek bada challenge tha—kafi columns mein '0' values thi (jaise Blood Pressure ya Insulin mein), jo biologically impossible hain."
+
+"Maine in zeroes ko delete nahi kiya, kyunki usse data loss ho jata. Maine Median Imputation use karke unhe fill kiya. Saath hi, maine Outliers ko bhi retain kiya hai kyunki medical field mein extreme values hi aksar bimari ki nishani hoti hain."
+
+3. Model Comparison (The "Research" part)
+"Maine sirf ek algorithm par trust nahi kiya. Maine 3 algorithms compare kiye:
+
+Logistic Regression (Baseline model)
+
+Decision Tree
+
+Random Forest Ensemble
+
+Comparison ke baad, Random Forest ne best accuracy aur stability di. Ye model 100 decision trees ke votes lekar final result deta hai, isliye ye bahut robust hai."
+
+4. The Web Application (The "USP")
+"Mera project sirf code tak limited nahi hai. Maine ise Streamlit framework use karke ek user-friendly Web App mein convert kiya hai."
+
+"Mera App 2 main cheezein batata hai:
+
+Final Result: Patient Positive hai ya Negative.
+
+Risk Probability: Patient ko kitne percent risk hai. Ye feature doctors ke liye bahut helpful hai taaki wo critical cases ko priority de sakein."
+
+5. Conclusion
+"In conclusion, ye system healthcare providers ko fast aur accurate decision lene mein help karta hai. Future mein hum isme aur bhi zyada data add karke iski accuracy ko 95% tak le ja sakte hain."
+
+💡 Viva ke liye "Pro-Tips" (Jab wo questions puchein):
+Agar wo puchein "Risk Percentage kaise nikal rahi ho?": Kehna, "Sir, maine model ka predict_proba function use kiya hai jo 0 aur 1 ke beech ki probability batata hai."
+
+Agar wo puchein "Deployment ke liye kya use kiya?": Kehna, "Sir, maine Streamlit use kiya hai jo Python-based modern web framework hai."
+
+Agar wo puchein "Pickle file kyun banayi?": Kehna, "Sir, trained model ko save karne ke liye, taaki humein baar-baar model train na karna pade."
