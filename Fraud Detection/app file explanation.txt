@@ -1,0 +1,1283 @@
+import streamlit as st
+# streamlit library import kar rahe hain jiska use web app / dashboard banane ke liye hota hai.
+
+import pandas as pd
+# pandas library import kar rahe hain jiska use table format (DataFrame) me data handle karne ke liye hota hai.
+
+import joblib
+# joblib library import kar rahe hain jiska use saved machine learning model (.pkl file) ko load karne ke liye hota hai.
+
+
+# ============================================================
+# PAGE CONFIG
+# ============================================================
+# Yeh section app ke page ki basic settings set karne ke liye hai.
+
+st.set_page_config(
+# streamlit page ki overall configuration set karne ke liye function use ho raha hai.
+
+    page_title="Insurance Fraud Detection",
+    # browser tab me jo title dikhega wo set kar rahe hain.
+
+    page_icon="🚗",
+    # browser tab ka icon set kar rahe hain.
+
+    layout="wide"
+    # app ka layout wide kar rahe hain taaki UI full width me professional lage.
+)
+# page config function yahan close ho raha hai.
+
+
+# ============================================================
+# CUSTOM CSS - LIGHT PROFESSIONAL UI
+# ============================================================
+# Yeh section app ko beautiful aur professional look dene ke liye custom CSS apply karta hai.
+
+st.markdown("""
+# streamlit markdown function ka use karke HTML/CSS inject kar rahe hain.
+
+<style>
+# HTML ke andar style tag open kar rahe hain jisme CSS likhenge.
+
+/* ===== Global App Background ===== */
+# Yeh comment batata hai ki niche wali CSS poore app ke background aur global styling ke liye hai.
+
+html, body, [data-testid="stAppViewContainer"], .main {
+# Yeh selectors poore app ke main background containers ko target kar rahe hain.
+
+    background: linear-gradient(180deg, #f4f8ff 0%, #eef4ff 100%) !important;
+    # app ke background me light blue gradient color laga rahe hain.
+
+    color: #111827 !important;
+    # default text color dark set kar rahe hain taaki clearly visible ho.
+
+    font-family: 'Segoe UI', sans-serif;
+    # poore app ka font Segoe UI set kar rahe hain.
+}
+# global background CSS block close ho raha hai.
+
+
+/* ===== Main Block Container ===== */
+# Yeh comment batata hai ki niche main content area ki spacing aur width set hogi.
+
+.block-container {
+# streamlit ke main content container ko target kar rahe hain.
+
+    padding-top: 1.5rem;
+    # upar se spacing de rahe hain.
+
+    padding-bottom: 2rem;
+    # niche se spacing de rahe hain.
+
+    max-width: 1400px;
+    # content ki maximum width set kar rahe hain taaki UI zyada stretch na ho.
+}
+# main block container CSS close ho rahi hai.
+
+
+/* ===== Remove Dark Layer if Any ===== */
+# Agar streamlit ka default dark top header aaye to usko transparent karne ke liye.
+
+[data-testid="stHeader"] {
+# streamlit header area ko target kar rahe hain.
+
+    background: rgba(0,0,0,0) !important;
+    # header ka background transparent kar diya gaya hai.
+}
+# header CSS close ho rahi hai.
+
+[data-testid="stToolbar"] {
+# streamlit toolbar area ko target kar rahe hain.
+
+    right: 1rem;
+    # toolbar ko right side se thoda spacing de rahe hain.
+}
+# toolbar CSS close ho rahi hai.
+
+
+/* ===== Titles ===== */
+# Niche custom title aur subtitle ki styling define ki gayi hai.
+
+.main-title {
+# custom main title class ko style kar rahe hain.
+
+    font-size: 42px;
+    # title ka font size bada rakha hai.
+
+    font-weight: 800;
+    # font ko extra bold kar rahe hain.
+
+    color: #163a70;
+    # title ka dark blue color set kar rahe hain.
+
+    text-align: center;
+    # title ko center align kar rahe hain.
+
+    margin-bottom: 8px;
+    # title ke niche thoda gap de rahe hain.
+}
+# main title CSS close ho rahi hai.
+
+.sub-title {
+# custom subtitle class ko style kar rahe hain.
+
+    font-size: 18px;
+    # subtitle ka font size set kar rahe hain.
+
+    color: #4b5563;
+    # subtitle ka soft gray color set kar rahe hain.
+
+    text-align: center;
+    # subtitle ko center me dikhayenge.
+
+    margin-bottom: 28px;
+    # subtitle ke niche zyada gap diya gaya hai.
+}
+# subtitle CSS close ho rahi hai.
+
+
+/* ===== Cards ===== */
+# Yeh comment batata hai ki card style containers ki design define ho rahi hai.
+
+.custom-card {
+# custom-card class ko style kar rahe hain.
+
+    background: #ffffff !important;
+    # card ka background white rakha hai.
+
+    border-radius: 22px;
+    # card ke corners rounded kar rahe hain.
+
+    padding: 22px;
+    # card ke andar spacing de rahe hain.
+
+    box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+    # card ke niche soft shadow de rahe hain taaki premium look aaye.
+
+    border: 1px solid #e5ecf6;
+    # card ke around light border laga rahe hain.
+
+    margin-bottom: 22px;
+    # card ke niche spacing de rahe hain.
+}
+# custom card CSS close ho rahi hai.
+
+.result-card {
+# result-card class ko style kar rahe hain jo result display ke liye use hoti hai.
+
+    background: linear-gradient(135deg, #ffffff, #f8fbff) !important;
+    # result card ke background me subtle gradient laga rahe hain.
+
+    border-radius: 22px;
+    # rounded corners.
+
+    padding: 22px;
+    # internal spacing.
+
+    box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+    # shadow for premium effect.
+
+    border: 1px solid #dbeafe;
+    # light blue border for result emphasis.
+
+    margin-bottom: 22px;
+    # niche gap de rahe hain.
+}
+# result card CSS close ho rahi hai.
+
+
+/* ===== Section Heading ===== */
+# Niche har section ke heading ki styling hai.
+
+.section-heading {
+# section heading class target ho rahi hai.
+
+    font-size: 24px;
+    # heading ka font size set kar rahe hain.
+
+    font-weight: 700;
+    # heading bold rakha gaya hai.
+
+    color: #1e3a8a;
+    # heading ka blue color set hai.
+
+    margin-bottom: 14px;
+    # heading ke niche gap diya gaya hai.
+}
+# section heading CSS close ho rahi hai.
+
+
+/* ===== Labels ===== */
+# Input labels ki styling ke liye.
+
+label, .stSelectbox label, .stNumberInput label, .stSlider label {
+# alag alag input labels ko target kar rahe hain.
+
+    color: #111827 !important;
+    # label text dark color me dikhayenge.
+
+    font-weight: 600 !important;
+    # labels ko semi-bold kar rahe hain.
+}
+# labels CSS close ho rahi hai.
+
+
+/* ===== Input Boxes ===== */
+# Text input, number input aur textarea ke box ki styling.
+
+.stTextInput input,
+# text input box target kar rahe hain.
+
+.stNumberInput input,
+# number input box target kar rahe hain.
+
+.stTextArea textarea {
+# textarea box target kar rahe hain.
+
+    background-color: #ffffff !important;
+    # input box ka background white rakha hai.
+
+    color: #111827 !important;
+    # input ke andar text dark rakha hai taaki visible ho.
+
+    border: 1.5px solid #d1d9e6 !important;
+    # input box border set kar rahe hain.
+
+    border-radius: 12px !important;
+    # corners rounded kar rahe hain.
+
+    padding: 10px 12px !important;
+    # input ke andar spacing de rahe hain.
+
+    font-size: 15px !important;
+    # font size set kar rahe hain.
+}
+# input box CSS close ho rahi hai.
+
+
+/* ===== Selectbox ===== */
+# Dropdown/select box ki styling ke liye.
+
+div[data-baseweb="select"] > div {
+# select box ke main container ko target kar rahe hain.
+
+    background-color: #ffffff !important;
+    # select box ka background white rakha hai.
+
+    color: #111827 !important;
+    # selected text dark color me.
+
+    border: 1.5px solid #d1d9e6 !important;
+    # border set kar rahe hain.
+
+    border-radius: 12px !important;
+    # rounded corners.
+
+    min-height: 46px !important;
+    # minimum height set kar rahe hain.
+}
+# selectbox CSS close ho rahi hai.
+
+/* selected text inside selectbox */
+# Yeh comment batata hai ki selected value text ke liye styling hai.
+
+div[data-baseweb="select"] span {
+# select box ke andar jo text dikh raha hai usko target kar rahe hain.
+
+    color: #111827 !important;
+    # selected text dark visible color me set kar rahe hain.
+}
+# selected text CSS close ho rahi hai.
+
+
+/* ===== Slider ===== */
+# Slider ki spacing adjust karne ke liye.
+
+.stSlider {
+# slider container target kar rahe hain.
+
+    padding-top: 8px;
+    # slider ke upar thoda gap de rahe hain.
+}
+# slider container CSS close ho rahi hai.
+
+.stSlider [data-baseweb="slider"] {
+# actual slider bar ko target kar rahe hain.
+
+    padding-left: 6px;
+    # left side spacing de rahe hain.
+
+    padding-right: 6px;
+    # right side spacing de rahe hain.
+}
+# slider bar CSS close ho rahi hai.
+
+
+/* ===== Buttons ===== */
+# Button ki professional styling ke liye.
+
+.stButton > button {
+# streamlit button element ko target kar rahe hain.
+
+    width: 100%;
+    # button full width me show hoga.
+
+    background: linear-gradient(90deg, #2563eb, #1d4ed8) !important;
+    # blue gradient button background.
+
+    color: white !important;
+    # button text white color me.
+
+    border: none !important;
+    # button border remove kar diya.
+
+    border-radius: 14px !important;
+    # rounded button corners.
+
+    padding: 12px 18px !important;
+    # button ke andar spacing.
+
+    font-size: 16px !important;
+    # button text ka size.
+
+    font-weight: 700 !important;
+    # button text bold.
+
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+    # button shadow for depth effect.
+
+    transition: 0.2s ease-in-out;
+    # hover effect smooth banane ke liye transition.
+}
+# button CSS close ho rahi hai.
+
+.stButton > button:hover {
+# jab user mouse button par le jaye tab hover effect apply hoga.
+
+    transform: translateY(-1px);
+    # button thoda upar move hoga for premium hover feel.
+
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.30);
+    # hover par shadow thodi strong ho jayegi.
+}
+# hover CSS close ho rahi hai.
+
+
+/* ===== Metrics ===== */
+# Metric boxes ki styling.
+
+div[data-testid="metric-container"] {
+# streamlit metric container target ho raha hai.
+
+    background: #ffffff !important;
+    # metric box white background.
+
+    border: 1px solid #e5ecf6 !important;
+    # light border.
+
+    padding: 12px !important;
+    # inner spacing.
+
+    border-radius: 16px !important;
+    # rounded corners.
+
+    box-shadow: 0 4px 10px rgba(17, 24, 39, 0.05);
+    # light shadow.
+}
+# metric container CSS close ho rahi hai.
+
+div[data-testid="metric-container"] label {
+# metric box ke label ko target kar rahe hain.
+
+    color: #6b7280 !important;
+    # label text gray color me.
+
+    font-weight: 600 !important;
+    # label semi-bold.
+}
+# metric label CSS close ho rahi hai.
+
+div[data-testid="metric-container"] div {
+# metric value text ko target kar rahe hain.
+
+    color: #111827 !important;
+    # metric number/value dark visible color me.
+}
+# metric value CSS close ho rahi hai.
+
+
+/* ===== Dataframe Wrapper ===== */
+# Dataframe table ke outer container ki styling.
+
+[data-testid="stDataFrame"] {
+# streamlit dataframe container target ho raha hai.
+
+    border-radius: 14px !important;
+    # rounded corners.
+
+    overflow: hidden !important;
+    # extra content cut ho jaaye taaki rounded corners clean dikhe.
+
+    border: 1px solid #e5ecf6 !important;
+    # light border around table.
+}
+# dataframe wrapper CSS close ho rahi hai.
+
+
+/* ===== Risk Badges ===== */
+# Risk level badge (Low / Medium / High) ke common style rules.
+
+.risk-badge {
+# risk badge class target ho rahi hai.
+
+    padding: 10px 18px;
+    # badge ke andar spacing.
+
+    border-radius: 999px;
+    # pill-shaped badge banane ke liye bahut zyada rounded corners.
+
+    font-weight: 700;
+    # bold text.
+
+    display: inline-block;
+    # badge ko inline block banaya hai taaki content ke hisab se size ho.
+
+    margin-top: 8px;
+    # upar thoda gap.
+
+    margin-bottom: 14px;
+    # niche thoda gap.
+}
+# common risk badge CSS close ho rahi hai.
+
+.low-risk {
+# low risk badge ka specific style.
+
+    background: #dcfce7;
+    # light green background.
+
+    color: #166534;
+    # dark green text.
+}
+# low risk CSS close ho rahi hai.
+
+.medium-risk {
+# medium risk badge ka specific style.
+
+    background: #fef3c7;
+    # light yellow background.
+
+    color: #92400e;
+    # dark orange/brown text.
+}
+# medium risk CSS close ho rahi hai.
+
+.high-risk {
+# high risk badge ka specific style.
+
+    background: #fee2e2;
+    # light red background.
+
+    color: #991b1b;
+    # dark red text.
+}
+# high risk CSS close ho rahi hai.
+
+
+/* ===== Info Note ===== */
+# Chhote note text ki styling.
+
+.small-note {
+# small note class target kar rahe hain.
+
+    font-size: 14px;
+    # small font size.
+
+    color: #6b7280;
+    # soft gray text color.
+
+    margin-top: 8px;
+    # upar spacing.
+}
+# small note CSS close ho rahi hai.
+
+
+/* ===== Expanders ===== */
+# Agar future me expander use ho to uski header styling.
+
+.streamlit-expanderHeader {
+# expander header ko target kar rahe hain.
+
+    color: #111827 !important;
+    # dark text color.
+
+    font-weight: 700 !important;
+    # bold header.
+}
+# expander CSS close ho rahi hai.
+
+
+/* ===== Markdown text ===== */
+# General text elements ke liye default text color.
+
+p, li, span, div {
+# paragraph, list item, span aur div text target ho raha hai.
+
+    color: #111827;
+    # sabka text dark visible color me set kar rahe hain.
+}
+# markdown text CSS close ho rahi hai.
+
+
+/* ===== Sidebar if appears ===== */
+# Agar sidebar use ho to uska background style.
+
+[data-testid="stSidebar"] {
+# streamlit sidebar ko target kar rahe hain.
+
+    background: #f8fbff !important;
+    # sidebar ka background soft light blue.
+}
+# sidebar CSS close ho rahi hai.
+
+
+/* ===== Fix dropdown popup text (important) ===== */
+# Dropdown open hone par jo option list dikhti hai uske text color fix kar rahe hain.
+
+ul[role="listbox"] li {
+# dropdown list ke har option item ko target kar rahe hain.
+
+    color: #111827 !important;
+    # option text dark color me.
+
+    background-color: #ffffff !important;
+    # option background white.
+}
+# dropdown popup CSS close ho rahi hai.
+
+
+/* ===== Success/Warning/Error text better ===== */
+# Alert boxes ke corners better banane ke liye.
+
+[data-testid="stAlert"] {
+# streamlit alert boxes (success, warning, error) target ho rahe hain.
+
+    border-radius: 14px !important;
+    # alert boxes ke corners rounded kar rahe hain.
+}
+# alert CSS close ho rahi hai.
+
+</style>
+# style tag close kar rahe hain.
+""", unsafe_allow_html=True)
+# markdown close ho raha hai aur unsafe_allow_html=True ka matlab HTML/CSS render allow kar rahe hain.
+
+
+# ============================================================
+# HEADER
+# ============================================================
+# Yeh section app ka top header show karne ke liye hai.
+
+st.markdown('<div class="main-title">🚗 Insurance Fraud Detection System</div>', unsafe_allow_html=True)
+# custom CSS class use karke main title ko top par show kar rahe hain.
+
+st.markdown('<div class="sub-title">Professional Claim Analysis using Machine Learning + Rule-Based Risk Intelligence</div>', unsafe_allow_html=True)
+# custom subtitle show kar rahe hain jo project ka purpose batata hai.
+
+
+# ============================================================
+# LOAD MODEL
+# ============================================================
+# Is section me saved machine learning system (.pkl file) load kar rahe hain.
+
+try:
+# try block use kar rahe hain taaki model load karte waqt error aaye to app crash na ho.
+
+    saved_system = joblib.load("insurance_fraud_pipeline.pkl")
+    # insurance_fraud_pipeline.pkl file ko load karke saved_system variable me store kar rahe hain.
+
+    pipeline = saved_system["pipeline"]
+    # loaded dictionary me se trained pipeline object nikal rahe hain.
+
+    selected_features = saved_system["selected_features"]
+    # training ke time jo exact features use hue the unki list nikal rahe hain.
+
+    best_threshold = saved_system["best_threshold"]
+    # best fraud decision threshold load kar rahe hain jo notebook me save hua tha.
+
+except Exception as e:
+# agar model loading me koi bhi error aaye to yeh block chalega.
+
+    st.error(f"❌ Model loading error: {e}")
+    # streamlit me red error message show karenge aur exact error bhi dikhayenge.
+
+    st.stop()
+    # app execution yahin rok denge taaki niche ka code run na ho.
+
+
+# ============================================================
+# MAIN 2-COLUMN LAYOUT
+# ============================================================
+# Yeh section page ko 2 columns me divide karta hai: left form ke liye aur right dashboard ke liye.
+
+left_col, right_col = st.columns([1.05, 1], gap="large")
+# do columns create kar rahe hain jahan left column thoda wider hai aur columns ke beech large gap diya gaya hai.
+
+
+# ============================================================
+# LEFT COLUMN - FORM
+# ============================================================
+# Is section me user se claim details input lene wala form hai.
+
+with left_col:
+# ab jo code is block me hoga wo left column ke andar render hoga.
+
+    st.markdown('<div class="custom-card">', unsafe_allow_html=True)
+    # left side ke form area ke liye custom white card start kar rahe hain.
+
+    st.markdown('<div class="section-heading">📝 Claim Details Input</div>', unsafe_allow_html=True)
+    # form section ka heading show kar rahe hain.
+
+    age = st.number_input("Customer Age", min_value=18, max_value=100, value=30)
+    # customer age ke liye number input box bana rahe hain, minimum 18, maximum 100, default 30.
+
+    auto_year = st.number_input("Vehicle Manufacturing Year", min_value=1990, max_value=2025, value=2016)
+    # vehicle manufacturing year ke liye input box bana rahe hain, default 2016.
+
+    incident_severity = st.selectbox(
+    # incident severity choose karne ke liye dropdown/selectbox bana rahe hain.
+
+        "Incident Severity",
+        # dropdown ka label set kar rahe hain.
+
+        ["Minor Damage", "Major Damage", "Total Loss", "Trivial Damage"]
+        # severity ke possible options define kar rahe hain.
+    )
+    # incident severity selectbox close ho raha hai.
+
+    incident_type = st.selectbox(
+    # incident type choose karne ke liye second dropdown bana rahe hain.
+
+        "Incident Type",
+        # dropdown ka label set kar rahe hain.
+
+        [
+            # niche incident type options ki list start ho rahi hai.
+
+            "Single Vehicle Collision",
+            # option 1: ek hi vehicle ka accident.
+
+            "Multi-vehicle Collision",
+            # option 2: multiple vehicles involved accident.
+
+            "Vehicle Theft",
+            # option 3: vehicle theft case.
+
+            "Parked Car"
+            # option 4: parked car related incident.
+        ]
+        # incident type options list close ho rahi hai.
+    )
+    # incident type selectbox close ho raha hai.
+
+    incident_hour_of_the_day = st.slider("Incident Hour of the Day", 0, 23, 14)
+    # incident kis hour me hua uske liye slider hai, 0 se 23 tak, default 14 (2 PM).
+
+    total_claim_amount = st.number_input("Total Claim Amount (₹)", min_value=0, value=25000)
+    # total claim amount enter karne ke liye numeric input, default 25000.
+
+    witnesses = st.number_input("Number of Witnesses", min_value=0, max_value=10, value=1)
+    # witnesses ki count enter karne ke liye input box, 0 se 10 tak.
+
+    bodily_injuries = st.number_input("Number of Bodily Injuries", min_value=0, max_value=10, value=0)
+    # bodily injuries ki count ke liye input box.
+
+    property_damage = st.selectbox("Property Damage", ["YES", "NO"])
+    # property damage hua ya nahi uske liye YES/NO dropdown.
+
+    police_report_available = st.selectbox("Police Report Available", ["YES", "NO"])
+    # police report available hai ya nahi uske liye YES/NO dropdown.
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    # button ke upar thoda vertical space dene ke liye HTML line break use kiya gaya hai.
+
+    predict_btn = st.button("🔍 Analyze Fraud Risk", use_container_width=True)
+    # analyze button bana rahe hain, click hone par prediction logic chalega, button full width me show hoga.
+
+    st.markdown('</div>', unsafe_allow_html=True)
+    # custom card div ko close kar rahe hain.
+
+
+# ============================================================
+# RIGHT COLUMN - INFO / RESULTS PLACEHOLDER
+# ============================================================
+# Is section me default info dashboard dikh raha hai jo button click se pehle visible hota hai.
+
+with right_col:
+# ab jo code is block me hai wo right column ke andar show hoga.
+
+    st.markdown('<div class="custom-card">', unsafe_allow_html=True)
+    # right side info panel ke liye custom card open kar rahe hain.
+
+    st.markdown('<div class="section-heading">📊 Smart Analysis Dashboard</div>', unsafe_allow_html=True)
+    # dashboard ka section heading show kar rahe hain.
+
+    st.markdown("""
+    # multiline markdown content start kar rahe hain.
+
+    This system evaluates insurance claims using:
+    # yeh line batati hai ki system kis kis logic se evaluate karta hai.
+
+    - **Machine Learning Probability**
+    # point 1: ML model ki fraud probability use hoti hai.
+
+    - **Suspicious Risk Signals**
+    # point 2: suspicious signals detect kiye jate hain.
+
+    - **Business Rule Override Logic**
+    # point 3: business rules se probability adjust hoti hai.
+
+    - **Low / Medium / High Risk Classification**
+    # point 4: final risk level classify hota hai.
+
+    - **Detailed Claim & Feature Summary**
+    # point 5: claim aur engineered features ka summary dikhaya jata hai.
+    """)
+    # markdown block close ho raha hai.
+
+    st.info("Fill the form on the left and click **Analyze Fraud Risk**.")
+    # blue info box show kar rahe hain jisme user ko instruction diya gaya hai.
+
+    st.markdown('</div>', unsafe_allow_html=True)
+    # custom card div close kar rahe hain.
+
+
+# ============================================================
+# PREDICTION LOGIC
+# ============================================================
+# Yeh main prediction section hai jo tab chalega jab user button click karega.
+
+if predict_btn:
+# agar analyze button click hua hai tab hi niche ka code run hoga.
+
+    vehicle_age = 2026 - auto_year
+    # vehicle age calculate kar rahe hain by current year 2026 minus manufacturing year.
+
+    high_claim_flag = 1 if total_claim_amount > 50000 else 0
+    # agar claim amount 50000 se zyada hai to high_claim_flag = 1, warna 0.
+
+    late_night_flag = 1 if 0 <= incident_hour_of_the_day <= 5 else 0
+    # agar incident raat 12 se subah 5 ke beech hua hai to late_night_flag = 1, warna 0.
+
+    no_witness_flag = 1 if witnesses == 0 else 0
+    # agar koi witness nahi hai to no_witness_flag = 1, warna 0.
+
+    no_police_report_flag = 1 if police_report_available == "NO" else 0
+    # agar police report available nahi hai to no_police_report_flag = 1, warna 0.
+
+    total_loss_flag = 1 if incident_severity == "Total Loss" else 0
+    # agar incident severity Total Loss hai to total_loss_flag = 1, warna 0.
+
+    vehicle_theft_flag = 1 if incident_type == "Vehicle Theft" else 0
+    # agar incident type vehicle theft hai to vehicle_theft_flag = 1, warna 0.
+
+    suspicious_score = (
+    # suspicious indicators ko add karke ek total suspicious score calculate karna start kar rahe hain.
+
+        high_claim_flag
+        # high claim flag ki value add ho rahi hai.
+
+        + late_night_flag
+        # late night flag add ho raha hai.
+
+        + no_witness_flag
+        # no witness flag add ho raha hai.
+
+        + no_police_report_flag
+        # no police report flag add ho raha hai.
+
+        + total_loss_flag
+        # total loss flag add ho raha hai.
+
+        + vehicle_theft_flag
+        # vehicle theft flag add ho raha hai.
+    )
+    # suspicious score calculation close ho rahi hai.
+
+    input_data = {
+    # model ko dene ke liye ek dictionary bana rahe hain jisme saare input features honge.
+
+        "age": [age],
+        # customer age ko list ke form me store kar rahe hain taaki DataFrame row ban sake.
+
+        "auto_year": [auto_year],
+        # vehicle manufacturing year ko list ke form me store kar rahe hain.
+
+        "incident_hour_of_the_day": [incident_hour_of_the_day],
+        # incident hour ko list ke form me store kar rahe hain.
+
+        "total_claim_amount": [total_claim_amount],
+        # total claim amount ko list ke form me store kar rahe hain.
+
+        "witnesses": [witnesses],
+        # witnesses count ko list ke form me store kar rahe hain.
+
+        "bodily_injuries": [bodily_injuries],
+        # bodily injuries count ko list ke form me store kar rahe hain.
+
+        "incident_severity": [incident_severity],
+        # incident severity text value ko list ke form me store kar rahe hain.
+
+        "incident_type": [incident_type],
+        # incident type text value ko list ke form me store kar rahe hain.
+
+        "property_damage": [property_damage],
+        # property damage YES/NO value ko list ke form me store kar rahe hain.
+
+        "police_report_available": [police_report_available],
+        # police report available YES/NO value ko list ke form me store kar rahe hain.
+
+        "vehicle_age": [vehicle_age],
+        # calculated vehicle age ko list ke form me store kar rahe hain.
+
+        "high_claim_flag": [high_claim_flag],
+        # engineered feature high claim flag ko list ke form me store kar rahe hain.
+
+        "late_night_flag": [late_night_flag],
+        # engineered feature late night flag ko list ke form me store kar rahe hain.
+
+        "no_witness_flag": [no_witness_flag],
+        # engineered feature no witness flag ko list ke form me store kar rahe hain.
+
+        "no_police_report_flag": [no_police_report_flag],
+        # engineered feature no police report flag ko list ke form me store kar rahe hain.
+
+        "total_loss_flag": [total_loss_flag],
+        # engineered feature total loss flag ko list ke form me store kar rahe hain.
+
+        "vehicle_theft_flag": [vehicle_theft_flag],
+        # engineered feature vehicle theft flag ko list ke form me store kar rahe hain.
+
+        "suspicious_score": [suspicious_score]
+        # final suspicious score ko list ke form me store kar rahe hain.
+    }
+    # input_data dictionary close ho rahi hai.
+
+    input_df = pd.DataFrame(input_data)
+    # input_data dictionary ko pandas DataFrame me convert kar rahe hain taaki model ko input diya ja sake.
+
+    try:
+    # try block use kar rahe hain taaki feature mismatch aaye to handle kar sake.
+
+        input_df = input_df[selected_features]
+        # DataFrame ke columns ko exactly training wale selected_features ke order me arrange kar rahe hain.
+
+    except Exception as e:
+    # agar feature names mismatch ho ya koi column missing ho to yeh block chalega.
+
+        st.error(f"❌ Feature mismatch error: {e}")
+        # red error box me mismatch error show karenge.
+
+        st.write("Model Expected Features:", selected_features)
+        # model ko kaunse features chahiye the wo show karenge.
+
+        st.write("Available Input Features:", list(input_df.columns))
+        # app ne kaunse input features banaye wo show karenge.
+
+        st.stop()
+        # app execution yahin stop kar denge taaki galat prediction na ho.
+
+    try:
+    # prediction ke liye second try block use kar rahe hain.
+
+        fraud_probability = pipeline.predict_proba(input_df)[0][1]
+        # pipeline se fraud class (class 1) ki probability nikal rahe hain, first row ke liye.
+
+    except Exception as e:
+    # agar prediction me error aaye to yeh block chalega.
+
+        st.error(f"❌ Prediction error: {e}")
+        # exact prediction error user ko show karenge.
+
+        st.stop()
+        # app yahin stop ho jayega.
+
+    # Rule-based override
+    # Yeh section machine learning output ko real-world suspicious rules ke basis par adjust karta hai.
+
+    if suspicious_score >= 5:
+    # agar suspicious score 5 ya usse zyada hai to bahut strong suspicious case maana jayega.
+
+        fraud_probability = max(fraud_probability, 0.85)
+        # fraud probability ko minimum 85% tak force kar denge agar ML ne usse kam diya ho.
+
+    elif suspicious_score == 4:
+    # agar suspicious score exactly 4 hai to strong suspicious case hai.
+
+        fraud_probability = max(fraud_probability, 0.65)
+        # fraud probability ko minimum 65% tak adjust karenge.
+
+    elif suspicious_score == 3:
+    # agar suspicious score exactly 3 hai to medium suspicious case hai.
+
+        fraud_probability = max(fraud_probability, 0.45)
+        # fraud probability ko minimum 45% tak adjust karenge.
+
+    prediction = 1 if fraud_probability >= best_threshold else 0
+    # final fraud probability ko best threshold se compare karke final class decide kar rahe hain: 1 = fraud, 0 = genuine.
+
+    # Risk levels
+    # Yeh section fraud probability ke basis par Low / Medium / High risk label decide karta hai.
+
+    if fraud_probability < 0.30:
+    # agar fraud probability 30% se kam hai to low risk.
+
+        risk_level = "Low Risk"
+        # risk level text Low Risk set kar rahe hain.
+
+        risk_class = "low-risk"
+        # CSS class low-risk set kar rahe hain badge color ke liye.
+
+    elif fraud_probability < 0.70:
+    # agar fraud probability 30% se 70% ke beech hai to medium risk.
+
+        risk_level = "Medium Risk"
+        # risk level text Medium Risk set kar rahe hain.
+
+        risk_class = "medium-risk"
+        # CSS class medium-risk set kar rahe hain.
+
+    else:
+    # agar fraud probability 70% ya usse zyada hai to high risk.
+
+        risk_level = "High Risk"
+        # risk level text High Risk set kar rahe hain.
+
+        risk_class = "high-risk"
+        # CSS class high-risk set kar rahe hain.
+
+    # Reasons
+    # Yeh section suspicious indicators ki readable list banata hai jo user ko explain karegi ki claim risky kyun hai.
+
+    reasons = []
+    # empty list bana rahe hain jisme suspicious reasons store karenge.
+
+    if high_claim_flag:
+    # agar high claim flag 1 hai to niche wali reason add hogi.
+
+        reasons.append("High claim amount detected")
+        # high claim amount ka reason list me add kar rahe hain.
+
+    if late_night_flag:
+    # agar late night flag 1 hai to niche reason add hogi.
+
+        reasons.append("Late-night incident timing")
+        # late night timing ka reason add kar rahe hain.
+
+    if no_witness_flag:
+    # agar no witness flag 1 hai to niche reason add hogi.
+
+        reasons.append("No witness available")
+        # no witness ka reason add kar rahe hain.
+
+    if no_police_report_flag:
+    # agar no police report flag 1 hai to niche reason add hogi.
+
+        reasons.append("Police report unavailable")
+        # police report unavailable ka reason add kar rahe hain.
+
+    if total_loss_flag:
+    # agar total loss flag 1 hai to niche reason add hogi.
+
+        reasons.append("Claim marked as total loss")
+        # total loss ka reason add kar rahe hain.
+
+    if vehicle_theft_flag:
+    # agar vehicle theft flag 1 hai to niche reason add hogi.
+
+        reasons.append("Incident involves vehicle theft")
+        # vehicle theft ka reason add kar rahe hain.
+
+    # ============================================================
+    # RESULTS SECTION
+    # ============================================================
+    # Yeh section final output UI me show karta hai.
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    # result section ke upar thoda gap dene ke liye line break.
+
+    st.markdown("## 📌 Final Fraud Analysis Result")
+    # result section ka heading show kar rahe hain.
+
+    res1, res2 = st.columns([1, 1], gap="large")
+    # result area ko 2 equal columns me divide kar rahe hain.
+
+    # LEFT RESULT PANEL
+    # Left panel me main fraud result, metrics aur suspicious indicators show honge.
+
+    with res1:
+    # ab niche ka content left result column me show hoga.
+
+        st.markdown('<div class="result-card">', unsafe_allow_html=True)
+        # result highlight card start kar rahe hain.
+
+        if prediction == 1:
+        # agar final prediction fraud hai to yeh condition true hogi.
+
+            st.error("⚠️ Potential Fraudulent Claim Detected")
+            # red alert box me fraudulent claim ka warning show karenge.
+
+        else:
+        # agar prediction fraud nahi hai to else chalega.
+
+            st.success("✅ Claim Appears Genuine")
+            # green success box me genuine claim message show karenge.
+
+        st.markdown(f'<div class="risk-badge {risk_class}">{risk_level}</div>', unsafe_allow_html=True)
+        # dynamic CSS class ke saath risk badge (Low/Medium/High) show kar rahe hain.
+
+        m1, m2, m3 = st.columns(3)
+        # metrics ko 3 columns me divide kar rahe hain.
+
+        with m1:
+        # first metric column.
+
+            st.metric("Fraud Probability", f"{fraud_probability:.2%}")
+            # fraud probability ko percentage format me 2 decimal tak show kar rahe hain.
+
+        with m2:
+        # second metric column.
+
+            st.metric("Decision Threshold", f"{best_threshold:.2f}")
+            # model ka decision threshold 2 decimal tak show kar rahe hain.
+
+        with m3:
+        # third metric column.
+
+            st.metric("Suspicious Score", f"{suspicious_score}/6")
+            # suspicious score ko total 6 me se show kar rahe hain.
+
+        st.markdown('</div>', unsafe_allow_html=True)
+        # result-card div close kar rahe hain.
+
+        st.markdown('<div class="custom-card">', unsafe_allow_html=True)
+        # second custom card start kar rahe hain jisme reasons aur logic explain hoga.
+
+        st.markdown("### 🚨 Suspicious Indicators")
+        # suspicious indicators ka subheading show kar rahe hain.
+
+        if reasons:
+        # agar reasons list empty nahi hai to yeh true hoga.
+
+            for r in reasons:
+            # reasons list ke har reason par loop chalega.
+
+                st.markdown(f"- {r}")
+                # har reason ko bullet point me show karenge.
+
+        else:
+        # agar reasons list empty hai to else chalega.
+
+            st.success("No major suspicious indicators found.")
+            # green message show hoga ki koi major suspicious indicator nahi mila.
+
+        st.markdown("### 🧾 Decision Logic")
+        # decision logic section ka heading show kar rahe hain.
+
+        if suspicious_score >= 5:
+        # agar suspicious score 5 ya usse zyada hai.
+
+            st.warning("Strong business rule override applied due to multiple suspicious indicators.")
+            # yellow warning box me batayenge ki strong business rule override apply hua hai.
+
+        elif suspicious_score == 4:
+        # agar suspicious score exactly 4 hai.
+
+            st.info("Moderate-to-high risk adjustment applied using business rules.")
+            # blue info box me moderate-high adjustment message show hoga.
+
+        elif suspicious_score == 3:
+        # agar suspicious score exactly 3 hai.
+
+            st.info("Moderate suspicious activity triggered partial fraud probability adjustment.")
+            # blue info box me partial adjustment message show hoga.
+
+        else:
+        # agar suspicious score 0,1,2 hai to else chalega.
+
+            st.success("Prediction mainly based on machine learning model output.")
+            # green success message me batayenge ki mainly ML output par decision hua hai.
+
+        st.markdown('<div class="small-note">This project combines ML prediction with real-world fraud risk rules for more reliable claim screening.</div>', unsafe_allow_html=True)
+        # niche small note show kar rahe hain jo project ki special strength explain karta hai.
+
+        st.markdown('</div>', unsafe_allow_html=True)
+        # second custom card close kar rahe hain.
+
+    # RIGHT RESULT PANEL
+    # Right panel me claim summary aur engineered risk features ka table show hoga.
+
+    with res2:
+    # ab niche ka content right result column me render hoga.
+
+        st.markdown('<div class="custom-card">', unsafe_allow_html=True)
+        # claim summary card start kar rahe hain.
+
+        st.markdown("### 📋 Claim Summary")
+        # claim summary ka heading show kar rahe hain.
+
+        summary_df = pd.DataFrame({
+        # claim summary ke liye ek DataFrame create kar rahe hain.
+
+            "Feature": [
+            # first column ka naam Feature hai aur niche feature names ki list aa rahi hai.
+
+                "Customer Age",
+                # feature 1 label.
+
+                "Vehicle Year",
+                # feature 2 label.
+
+                "Vehicle Age",
+                # feature 3 label.
+
+                "Incident Severity",
+                # feature 4 label.
+
+                "Incident Type",
+                # feature 5 label.
+
+                "Incident Hour",
+                # feature 6 label.
+
+                "Claim Amount",
+                # feature 7 label.
+
+                "Witnesses",
+                # feature 8 label.
+
+                "Bodily Injuries",
+                # feature 9 label.
+
+                "Property Damage",
+                # feature 10 label.
+
+                "Police Report"
+                # feature 11 label.
+            ],
+            # Feature list close ho rahi hai.
+
+            "Value": [
+            # second column ka naam Value hai aur niche corresponding values ki list aa rahi hai.
+
+                age,
+                # customer age value.
+
+                auto_year,
+                # vehicle manufacturing year value.
+
+                vehicle_age,
+                # calculated vehicle age value.
+
+                incident_severity,
+                # selected incident severity value.
+
+                incident_type,
+                # selected incident type value.
+
+                incident_hour_of_the_day,
+                # selected incident hour value.
+
+                total_claim_amount,
+                # entered total claim amount value.
+
+                witnesses,
+                # witnesses count value.
+
+                bodily_injuries,
+                # bodily injuries count value.
+
+                property_damage,
+                # property damage YES/NO value.
+
+                police_report_available
+                # police report YES/NO value.
+            ]
+            # Value list close ho rahi hai.
+        })
+        # summary DataFrame creation close ho raha hai.
+
+        st.dataframe(summary_df, use_container_width=True, hide_index=True)
+        # summary_df ko table format me full width par show kar rahe hain aur index hide kar rahe hain.
+
+        st.markdown('</div>', unsafe_allow_html=True)
+        # claim summary card close kar rahe hain.
+
+        st.markdown('<div class="custom-card">', unsafe_allow_html=True)
+        # engineered risk features ke liye second card start kar rahe hain.
+
+        st.markdown("### 🧠 Engineered Risk Features")
+        # engineered features section ka heading show kar rahe hain.
+
+        engineered_df = pd.DataFrame({
+        # engineered risk features ke liye DataFrame bana rahe hain.
+
+            "Risk Feature": [
+            # first column ka naam Risk Feature hai.
+
+                "High Claim Flag",
+                # engineered feature 1 label.
+
+                "Late Night Flag",
+                # engineered feature 2 label.
+
+                "No Witness Flag",
+                # engineered feature 3 label.
+
+                "No Police Report Flag",
+                # engineered feature 4 label.
+
+                "Total Loss Flag",
+                # engineered feature 5 label.
+
+                "Vehicle Theft Flag",
+                # engineered feature 6 label.
+
+                "Suspicious Score"
+                # engineered feature 7 label.
+            ],
+            # risk feature list close ho rahi hai.
+
+            "Value": [
+            # second column ka naam Value hai.
+
+                high_claim_flag,
+                # high claim flag ki actual value.
+
+                late_night_flag,
+                # late night flag ki actual value.
+
+                no_witness_flag,
+                # no witness flag ki actual value.
+
+                no_police_report_flag,
+                # no police report flag ki actual value.
+
+                total_loss_flag,
+                # total loss flag ki actual value.
+
+                vehicle_theft_flag,
+                # vehicle theft flag ki actual value.
+
+                suspicious_score
+                # suspicious score ki actual value.
+            ]
+            # values list close ho rahi hai.
+        })
+        # engineered DataFrame creation close ho raha hai.
+
+        st.dataframe(engineered_df, use_container_width=True, hide_index=True)
+        # engineered_df ko table format me show kar rahe hain, full width aur without index.
+
+        st.markdown('</div>', unsafe_allow_html=True)
+        # engineered features card close kar rahe hain.

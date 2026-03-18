@@ -1,0 +1,330 @@
+# ==========================================================
+# Ye ek decorative/comment line hai jo notebook me section ko clearly separate karne ke liye use hoti hai.
+# Isse code ka structure professional aur readable dikhta hai.
+
+# CELL 2: Import Required Libraries
+# Ye batata hai ki ye notebook ka dusra cell hai aur is cell ka kaam required Python libraries import karna hai.
+
+# ==========================================================
+# Ye fir se section closing / design comment line hai taaki heading clean lage.
+
+
+import warnings
+# 'warnings' Python ki built-in library hai.
+# Iska use code run karte time aane wale warning messages ko control karne ke liye hota hai.
+
+warnings.filterwarnings("ignore")
+# Ye line sabhi warning messages ko hide/ignore kar deti hai.
+# Isse notebook output clean dikhta hai aur unnecessary warnings students ko confuse nahi karti.
+
+
+import numpy as np
+# NumPy numerical calculations ke liye use hoti hai.
+# Iska use arrays, mathematical operations, fast computations ke liye hota hai.
+# 'as np' ka matlab hai ki hum aage NumPy ko short name 'np' se use karenge.
+
+import pandas as pd
+# Pandas data handling ke liye sabse important library hai.
+# Iska use tables, rows, columns, CSV files aur DataFrame operations ke liye hota hai.
+# 'as pd' ka matlab hai aage hum Pandas ko short name 'pd' se use karenge.
+
+import matplotlib.pyplot as plt
+# Matplotlib data visualization ke liye use hoti hai.
+# Iska use graphs, charts, plots banane ke liye hota hai.
+# 'plt' short name hai jo plotting commands ko easy banata hai.
+
+import seaborn as sns
+# Seaborn bhi visualization library hai jo Matplotlib ke upar based hai.
+# Isse attractive statistical graphs aur heatmaps banana easy ho jata hai.
+# 'sns' iska short name hai.
+
+import joblib
+# Joblib model ya objects ko save aur load karne ke liye use hota hai.
+# Iska use trained machine learning model ko .pkl file me store karne ke liye hota hai.
+
+
+from sklearn.model_selection import train_test_split
+# train_test_split dataset ko training aur testing parts me divide karne ke liye use hota hai.
+# Training data model ko sikhata hai, testing data model ki performance check karta hai.
+
+from sklearn.compose import ColumnTransformer
+# ColumnTransformer alag-alag columns par alag preprocessing apply karne ke liye use hota hai.
+# Jaise numeric columns par alag steps aur categorical columns par alag steps.
+
+from sklearn.pipeline import Pipeline
+# Pipeline multiple preprocessing + model steps ko ek sequence me jodne ke liye use hota hai.
+# Isse code clean, reusable aur error-free hota hai.
+
+from sklearn.preprocessing import OneHotEncoder
+# OneHotEncoder categorical text values ko machine-readable numeric format me convert karta hai.
+# Jaise "YES", "NO", "Vehicle Theft" jaise text values ko binary columns me convert karega.
+
+from sklearn.impute import SimpleImputer
+# SimpleImputer missing values (NaN/null) ko fill karne ke liye use hota hai.
+# Jaise empty values ko mean, median ya most frequent value se replace kar sakte hain.
+
+
+from sklearn.linear_model import LogisticRegression
+# LogisticRegression ek classification algorithm hai.
+# Iska use binary prediction ke liye hota hai, jaise fraud ya non-fraud.
+
+from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier, GradientBoostingClassifier
+# Ye teen alag ensemble machine learning classification models hain.
+# RandomForestClassifier: multiple decision trees ka use karke prediction karta hai.
+# ExtraTreesClassifier: RandomForest jaisa hi hota hai lekin aur zyada randomness use karta hai.
+# GradientBoostingClassifier: weak models ko combine karke strong predictive model banata hai.
+
+from xgboost import XGBClassifier
+# XGBClassifier XGBoost library ka powerful boosting model hai.
+# Ye advanced machine learning classifier hai jo high accuracy ke liye famous hai.
+# Fraud detection jaise problems me kaafi effective hota hai.
+
+
+import pandas as pd
+# Ye line dobara Pandas import kar rahi hai.
+# Ye duplicate import hai, technically zaroori nahi hai kyunki upar already import ho chuka hai.
+# Lekin dobara import karne se error nahi aata.
+
+import numpy as np
+# Ye line dobara NumPy import kar rahi hai.
+# Ye bhi duplicate import hai, zaroori nahi hai lekin safe hai.
+
+import joblib
+# Ye line dobara Joblib import kar rahi hai.
+# Ye bhi duplicate import hai aur unnecessary hai, lekin code run me problem nahi karegi.
+
+
+from sklearn.model_selection import train_test_split
+# Ye line dobara train_test_split import kar rahi hai.
+# Ye duplicate import hai, पहले se import ho chuka hai.
+# Iska extra effect nahi hota.
+
+from sklearn.compose import ColumnTransformer
+# Ye line dobara ColumnTransformer import kar rahi hai.
+# Ye bhi duplicate import hai.
+
+from sklearn.pipeline import Pipeline
+# Ye line dobara Pipeline import kar rahi hai.
+# Ye bhi duplicate import hai aur technically optional hai.
+
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+# Is line me OneHotEncoder dobara import ho raha hai aur saath me StandardScaler bhi import ho raha hai.
+# StandardScaler numeric data ko scale/standardize karta hai.
+# Isse values ka mean 0 aur standard deviation 1 ke aas-paas ho jata hai.
+# Kuch ML models scaling se better perform karte hain.
+
+from sklearn.impute import SimpleImputer
+# Ye line dobara SimpleImputer import kar rahi hai.
+# Ye duplicate import hai.
+
+from sklearn.ensemble import RandomForestClassifier
+# Ye line dobara RandomForestClassifier import kar rahi hai.
+# Ye bhi duplicate import hai.
+
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+# Ye line model evaluation ke liye 3 important metrics import karti hai:
+# accuracy_score: model kitna sahi predict kar raha hai uska percentage batata hai.
+# classification_report: precision, recall, f1-score ka detailed summary deta hai.
+# confusion_matrix: actual vs predicted values ka comparison matrix deta hai.
+
+
+from sklearn.metrics import (
+# Ye line sklearn.metrics module se multiple evaluation metrics import karne ki start line hai.
+# Parentheses ka use multi-line import ko readable banane ke liye hota hai.
+
+    accuracy_score,
+    # Accuracy metric import ho rahi hai.
+    # Ye batata hai ki total predictions me se kitni predictions sahi thi.
+
+    precision_score,
+    # Precision metric import ho rahi hai.
+    # Ye batata hai ki jitne fraud predict kiye, unme se kitne actually fraud the.
+
+    recall_score,
+    # Recall metric import ho rahi hai.
+    # Ye batata hai ki actual fraud cases me se model ne kitne fraud correctly pakde.
+
+    f1_score,
+    # F1-score metric import ho rahi hai.
+    # Ye precision aur recall ka balanced average hota hai.
+    # Fraud detection me kaafi important hota hai.
+
+    roc_auc_score,
+    # ROC-AUC metric import ho rahi hai.
+    # Ye model ki overall class separation ability batata hai.
+    # Higher AUC ka matlab better fraud vs non-fraud discrimination.
+
+    classification_report,
+    # Ye detailed report import ho rahi hai.
+    # Isme precision, recall, f1-score aur support milta hai.
+
+    confusion_matrix
+    # Ye confusion matrix import ho rahi hai.
+    # Isse TP, TN, FP, FN ka detailed breakdown milta hai.
+)
+# Ye closing bracket hai jo multi-line import ko complete karta hai.
+
+
+print("All libraries imported successfully.")
+# Ye line screen par message print karegi.
+# Iska purpose confirm karna hai ki saari libraries successfully import ho gayi hain.
+# Agar is line tak output aa gaya, to matlab imports sahi hain aur cell properly run ho gaya.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+df = pd.read_csv("insurance_claims.csv")
+Is line mein aap pandas library ka use karke apni CSV file ko load kar rahi hain. "insurance_claims.csv" file ka sara data ab df naam ke ek DataFrame (ek tarah ki table) mein save ho gaya hai.
+
+print("Dataset Shape:", df.shape)
+df.shape aapko ye batata hai ki aapke dataset mein total kitni rows (records) aur kitne columns (features) hain. Output mein ye (rows, columns) ke format mein dikhega.
+
+print("\nColumns:\n", list(df.columns))
+Isse aapko un saare columns ki ek list mil jayegi jo aapke dataset mein maujood hain. list() function columns ke names ko ek saaf-suthri list mein convert kar deta hai taaki aap dekh sakein ki data mein kya-kya information hai.
+
+df.head()
+Ye command dataset ki pehli 5 rows ko display karti hai. Isse aapko idea lag jata hai ki data dikhne mein kaisa hai aur usme kis tarah ki values (numbers, text, etc.) hain.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+print("Missing Values Per Column:\n")
+Ye simple ek heading print kar raha hai taaki aapko pata chale ki niche jo numbers aane wale hain wo kis baare mein hain.
+
+print(df.isnull().sum())
+Ye line bahut important hai.
+
+df.isnull() check karta hai ki pure dataset mein kahan-kahan data missing hai (NaN ya empty cells).
+
+.sum() un saare missing values ko har column ke hisaab se jod (add) deta hai.
+
+Result: Aapko dikhega ki kis column mein kitni values gayab hain. Agar sab 0 hai, matlab data clean hai.
+
+print("\nTarget Distribution:")
+Ye dusri heading hai jo "Target Variable" (jis cheez ko hum predict karna chahte hain) ki halat batati hai.
+
+print(df["fraud_reported"].value_counts())
+Yahan aap apne main column "fraud_reported" ko analyze kar rahi hain.
+
+value_counts() ye count karta hai ki kitne log 'Yes' (fraud) hain aur kitne 'No' (not fraud).
+
+Isse aapko pata chalta hai ki data balanced hai ya imbalanced (jaise ki agar 900 'No' aur sirf 100 'Yes' hain, toh data imbalanced hoga).
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Drop Column: Agar _c39 naam ka koi faltu column hai, toh usey delete kar diya gaya.
+
+Total Claim: Teen alag-alag claims (injury, property, vehicle) ko jod kar ek Total Amount banaya gaya.
+
+Vehicle Age: Current saal (2026) se car ka model year minus karke uski umr nikali gayi.
+
+Flagging (Binary Flags): Yahan aapne .astype(int) ka use karke True/False ko 1 aur 0 mein badal diya hai:
+
+High Claim: Agar claim 70,000 se zyada hai toh 1, warna 0.
+
+Late Night: Agar accident raat 10 baje ke baad ya subah 5 baje se pehle hua toh 1.
+
+No Witness/Police Report: Agar koi gawah nahi tha ya police report nahi thi toh 1.
+
+Total Loss/Theft: Specific accident types (code 3) ke liye 1 mark kiya gaya.
+
+Suspicious Score: Upar diye gaye saare "Flags" ko jod diya gaya. Jitna bada score, utna zyada doubtful case.
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+selected_features = [...]
+Yahan aapne un saare columns ki ek list banayi hai jo aapke model ke liye sabse zyada kaam ke (important) hain. Isme purane columns (jaise age) aur aapke banaye naye features (jaise suspicious_score) dono shaamil hain.
+
+target_column = "fraud_reported"
+Ye aapka main goal hai—yani wo column jise model ko predict karna hai (Fraud hua ya nahi).
+
+data = df[selected_features + [target_column]].copy()
+Aapne original dataset (df) mein se sirf kaam ke columns aur target column ko chuna aur unki ek copy bana li data naam ke naye variable mein. Faltu columns ab is naye dataset mein nahi honge.
+
+print("Selected Data Shape:", data.shape)
+Ye check karne ke liye hai ki ab final dataset mein kitni rows aur columns bache hain.
+
+data.head()
+Naye filtered dataset ki pehli 5 rows dekhne ke liye.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+CELL 14: Target Mapping & X-y Split
+Mapping: "N" (No Fraud) ko 0 aur "Y" (Yes Fraud) ko 1 mein badal diya, kyunki computer numbers behtar samajhta hai.
+
+X aur y: * X: Saare input features (input data).
+
+y: Target variable (jo predict karna hai).
+
+CELL 16: Train-Test Split
+Split: Aapne data ko do hisson mein baanta: 80% Training ke liye (seekhne ke liye) aur 20% Testing ke liye (check karne ke liye).
+
+stratify=y: Iska matlab hai ki Train aur Test dono sets mein 'Fraud' aur 'Non-Fraud' ka ratio barabar rahega, taaki model biased na ho.
+
+CELL 18: Preprocessing Pipeline
+Yahan aapne ek "Sancha" (Template) banaya hai jo data ko clean karega:
+
+Numerical Features: Agar koi value missing hai, toh usey Median (beech wali value) se bhar diya jayega (SimpleImputer).
+
+Categorical Features: * Missing values ko Most Frequent (jo sabse zyada baar aaya ho) se bhara jayega.
+
+Phir OneHotEncoder ka use karke text categories (jaise 'Minor Damage', 'Total Loss') ko 0 aur 1 ke columns mein badal diya jayega.
+
+ColumnTransformer: Isne upar ke dono rules ko ek saath jod diya taaki hum pure data par ek saath apply kar sakein.
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+CELL 20: Define Models (Team Taiyar Karna)
+Yahan aapne 5 alag-alag "Dimaag" (Algorithms) chune hain taaki aap dekh sakein kaun sabse accha kaam karta hai:
+
+Logistic Regression: Sabse simple model.
+
+Random Forest & Extra Trees: Ye bahut saare "Decision Trees" banate hain aur unka average nikalte hain. Inmein class_weight="balanced" rakha hai taaki ye Fraud cases (jo kam hote hain) unhe ignore na karein.
+
+Gradient Boosting & XGBoost: Ye modern models hain jo apni purani galtiyon se seekh-seekh kar behtar hote hain.
+
+CELL 21: Train and Evaluate (Muqabala)
+Yahan ek for loop chal raha hai jo har model ke liye ye steps karta hai:
+
+Pipeline: Preprocessor (jo pehle banaya tha) aur Model ko ek sath joda.
+
+Fit: Model ko X_train aur y_train dekar "padhai" karwayi.
+
+Metrics: Phir model se test data par sawal pooche aur check kiya ki uski Accuracy, Precision (kitne sahi fraud pakde), aur Recall (kitne asli fraud miss kiye) kaisi hai.
+
+Comparison: Last mein ek table banayi jo models ko unke F1 Score (sabse balance score) ke hisaab se rank karti hai.
+
+CELL 23: Final Selection & Threshold Tuning (Fine-tuning)
+Aapne Random Forest ko apna champion model chuna. Lekin model sirf 0 ya 1 nahi deta, wo Probability (percentage) deta hai (jaise: 60% chance hai ki ye fraud hai).
+
+Threshold Tuning: By default, 50% se upar ko Fraud mana jata hai. Aapne yahan 0.30 se 0.60 tak alag-alag thresholds check kiye.
+
+Logic: Kabhi-kabhi 40% (0.40) par threshold rakhne se hum zyada fraud pakad paate hain (High Recall).
+
+Best Threshold: Code ne wo point dhoonda jahan F1 Score sabse zyada hai, yani jahan Precision aur Recall ka balance perfect hai.
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+CELL 25: Final Evaluation (Last Result)
+Threshold Application: Aapne pehle jo best_threshold nikaala tha, usey use karke final predictions (y_pred_final) nikale.
+
+Classification Report: Ye aapko ek Detailed Report dikhata hai jisme Precision, Recall, aur F1-score hote hain. Isse pata chalta hai ki model "Fraud" aur "Non-Fraud" dono ko kitne achhe se pehchan pa raha hai.
+
+CELL 26: Confusion Matrix (Report Card)
+Yahan ek Heatmap (graph) ban raha hai jo 4 cheezein dikhata hai:
+
+True Negatives: Kitne sahi "Not Fraud" pakde.
+
+True Positives: Kitne sahi "Fraud" pakde.
+
+False Positives: Kitne "Seedhe" logon ko galti se "Fraud" bol diya.
+
+False Negatives: Kitne "Asli Fraud" model se bach kar nikal gaye.
+
+Manual Threshold Override & Saving
+Threshold = 0.30: Aapne manually threshold ko 0.30 par set kiya.
+
+Kyun? Kyunki insurance mein "Fraud" na pakad paana (False Negative) zyada mehnga padta hai. Threshold kam karne se model thoda "strict" ho jata hai aur zyada se zyada suspects ko pakadta hai.
+
+joblib.dump: Ye sabse important part hai. Aapne apne Trained Pipeline, Selected Features, aur Threshold ko ek file (insurance_fraud_pipeline.pkl) mein pack karke save kar diya.

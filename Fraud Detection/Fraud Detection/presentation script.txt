@@ -1,0 +1,23 @@
+“Good morning sir/ma’am.
+Mera project ka naam hai Insurance Fraud Detection using Machine Learning.
+
+Is project ka main objective hai insurance claim data ke basis par predict karna ki claim genuine hai ya fraudulent ho sakta hai.
+
+Is project me maine insurance_claims.csv dataset use kiya hai.
+Sabse pehle maine dataset ko load kiya, uske columns aur structure ko samjha, aur fir preprocessing ki.
+Preprocessing me maine missing values handle ki, categorical data ko encode kiya, aur training aur testing ke liye data split kiya.
+
+Uske baad maine multiple machine learning models test kiye aur final model ko pipeline ke through train karke .pkl file me save kiya.
+Pipeline use karne ka fayda ye hai ki training time ka same preprocessing live prediction me automatically apply ho jata hai.
+
+Iske baad maine Streamlit ka use karke ek web application banayi, jisme user claim details enter karta hai aur model fraud probability predict karta hai.
+
+Sirf fraud ya non-fraud dikhane ke bajay, maine output ko aur practical banaya hai by showing:
+
+fraud probability
+
+risk level as Low, Medium, or High
+
+Ye project real-world insurance companies ke liye useful ho sakta hai kyunki ye suspicious claims ko early stage par identify karne me help karta hai.
+
+Thank you sir/ma’am.”**
